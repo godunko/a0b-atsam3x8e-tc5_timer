@@ -11,12 +11,17 @@
 pragma Restrictions (No_Elaboration_Code);
 
 private with A0B.Time;
+with A0B.Types;
 
 package A0B.ATSAM3X8E.TC5_Timer
   with Preelaborate
 is
 
-   procedure Initialize;
+   type Timer_Clock_Source is (MCK_2, MCK_8, MCK_32, MCK_128);
+
+   procedure Initialize
+     (Master_Clock_Frequency : A0B.Types.Unsigned_32;
+      Source                 : Timer_Clock_Source);
 
 private
 

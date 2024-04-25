@@ -16,25 +16,72 @@ with A0B.ARMv7M.NVIC_Utilities; use A0B.ARMv7M.NVIC_Utilities;
 with A0B.SVD.ATSAM3X8E.PMC;     use A0B.SVD.ATSAM3X8E.PMC;
 with A0B.SVD.ATSAM3X8E.TC;      use A0B.SVD.ATSAM3X8E.TC;
 with A0B.Timer.Internals;
-with A0B.Types;
 
 package body A0B.ATSAM3X8E.TC5_Timer is
 
    procedure TC5_Handler
      with Export, Convention => C, External_Name => "TC5_Handler";
 
+   Mul : A0B.Types.Unsigned_32;
+   Div : constant A0B.Types.Unsigned_32 := 1_000_000_000;
+   --  Multiplier and divider to convert time span in nanoseconds to the number
+   --  of timer's ticks.
+
    ----------------
    -- Initialize --
    ----------------
 
-   procedure Initialize is
+   procedure Initialize
+     (Master_Clock_Frequency : A0B.Types.Unsigned_32;
+      Source                 : Timer_Clock_Source)
+   is
+      use type A0B.Types.Unsigned_32;
+
+      TCCLKS : CMR0_TCCLKS_Field;
+
    begin
+      --  Compute timer's clock frequency
+      --
+      --  Reminder of the typical frequency of the Master Clock (84 MHz)
+      --  divided by the clock divisor is zero. So, just precompute it and
+      --  use later as multiplier in time span to ticks conversion.
+      --
+      --  Divisor in time span to ticks conversion is fixed to the number
+      --  of nanoseconds in the second.
+
+      case Source is
+         when MCK_2 =>
+            --  Internal MCK/2 clock signal (from PMC)
+
+            TCCLKS := TIMER_CLOCK1;
+            Mul    := Master_Clock_Frequency / 2;
+
+         when MCK_8 =>
+            --  Internal MCK/8 clock signal (from PMC)
+
+            TCCLKS := TIMER_CLOCK2;
+            Mul    := Master_Clock_Frequency / 8;
+
+         when MCK_32 =>
+            --  Internal MCK/32 clock signal (from PMC)
+
+            TCCLKS := TIMER_CLOCK3;
+            Mul    := Master_Clock_Frequency / 32;
+
+         when MCK_128 =>
+            --  Internal MCK/128 clock signal (from PMC)
+
+            TCCLKS := TIMER_CLOCK4;
+            Mul    := Master_Clock_Frequency / 128;
+      end case;
+
+      --  Enable peripheral clock
+
       PMC_Periph.PMC_PCER1 :=
         (PID    =>
            (As_Array => True,
             Arr      => [Timer_Counter_Channel_5 => True, others => False]),
          others => <>);
-      --  Enable peripheral clock
 
       --  Disable TC to be able to configure it
 
@@ -47,8 +94,7 @@ package body A0B.ATSAM3X8E.TC5_Timer is
       --  Configure TC in capture mode
 
       TC1_Periph.CMR2 :=
-        (TCCLKS  => TIMER_CLOCK3,
-         --  Clock selected: internal MCK/32 clock signal (from PMC)
+        (TCCLKS  => TCCLKS,  --  Clock selected
          CLKI    => False,
          --  Counter is incremented on rising edge of the clock.
          BURST   => NONE,
@@ -59,11 +105,11 @@ package body A0B.ATSAM3X8E.TC5_Timer is
          --  Counter clock is not disabled when RB loading occurs.
          ETRGEDG => NONE,
          --  The clock is not gated by an external signal.
-         ABETRG  => False,  --  irrelevant
+         ABETRG  => False,   --  irrelevant
          --  TIOB is used as an external trigger.
          CPCTRG  => False,
          --  RC Compare has no effect on the counter and its clock.
-         WAVE    => False,  --  Caprure mode is enabled
+         WAVE    => False,   --  Caprure mode is enabled
          LDRA    => NONE,
          LDRB    => NONE,
          others  => <>);
@@ -104,7 +150,7 @@ package body A0B.ATSAM3X8E.TC5_Timer is
       Clear_Pending (Timer_Counter_Channel_5);
       Enable_Interrupt (Timer_Counter_Channel_5);
 
-      --  Initialize Timer.
+      --  Initialize A0B Timer.
 
       A0B.Timer.Internals.Initialize;
    end Initialize;
@@ -132,7 +178,8 @@ package body A0B.ATSAM3X8E.TC5_Timer is
 
       Ticks : constant A0B.Types.Unsigned_64 :=
         A0B.Types.Unsigned_64 (A0B.Time.To_Nanoseconds (Span))
-          * 84_000_000 / 1_000_000_000 / 32;
+          * A0B.Types.Unsigned_64 (Mul)
+          / A0B.Types.Unsigned_64 (Div);
 
    begin
       if Ticks = 0 then
