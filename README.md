@@ -1,4 +1,4 @@
-# A0B ATSAM3X8E High Precision Timer on top of TC5
+# A0B ATSAM3X8E High Resolution Timer on top of TC5
 
 This crate provides platform dependent implementation of the [A0B Timer](https://github.com/godunko/a0b-timer) on top of TC5 of the ATSAM3X8E MCU.
 
