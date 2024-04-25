@@ -4,9 +4,9 @@
 --  SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 --
 
---  Implementation of the TImer on top of ATSAM3X8E TC5.
+--  Implementation of the A0B Timer on top of ATSAM3X8E TC5.
 --
---  Note, this packahe exports TC5_Handler symbol to setup interrupt handler.
+--  Note, this package exports TC5_Handler symbol to setup interrupt handler.
 
 pragma Restrictions (No_Elaboration_Code);
 
