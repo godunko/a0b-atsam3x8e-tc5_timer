@@ -9,6 +9,7 @@ licenses = "Apache-2.0 WITH LLVM-exception"
 tags = ["embedded", "timer"]
 
 project-files = ["gnat/a0b_timer_platform.gpr"]
+provides = ["a0b_timer_platform=0.1.0"]
 
 [configuration]
 disabled = true
