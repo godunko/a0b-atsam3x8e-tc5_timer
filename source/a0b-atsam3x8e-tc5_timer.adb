@@ -13,8 +13,8 @@ pragma Restrictions (No_Elaboration_Code);
 pragma Ada_2022;
 
 with A0B.ARMv7M.NVIC_Utilities; use A0B.ARMv7M.NVIC_Utilities;
-with A0B.SVD.ATSAM3X8E.PMC;     use A0B.SVD.ATSAM3X8E.PMC;
-with A0B.SVD.ATSAM3X8E.TC;      use A0B.SVD.ATSAM3X8E.TC;
+with A0B.ATSAM3X8E.SVD.PMC;     use A0B.ATSAM3X8E.SVD.PMC;
+with A0B.ATSAM3X8E.SVD.TC;      use A0B.ATSAM3X8E.SVD.TC;
 with A0B.Timer.Internals;
 
 package body A0B.ATSAM3X8E.TC5_Timer is
