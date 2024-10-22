@@ -16,3 +16,8 @@ disabled = true
 
 [[depends-on]]
 a0b_atsam3x8e = "*"
+
+[[actions]]
+type = "test"
+directory = "selftest"
+command = ["alr", "build"]
