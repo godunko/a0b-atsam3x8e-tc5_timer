@@ -1,6 +1,6 @@
 name = "a0b_atsam3x8e_tc5_timer"
 description = "A0B ATSAM3X8E High Resulotion Timer on top of TC5"
-version = "0.1.0"
+version = "0.2.0-dev"
 provides = ["a0b_timer_platform=0.1.0"]
 
 authors = ["Vadim Godunko"]
