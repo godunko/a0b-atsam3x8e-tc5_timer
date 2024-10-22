@@ -4,7 +4,7 @@
 --  SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 --
 
-with A0B.ARMv7M.CMSIS;
+with A0B.ARMv7M.Instructions;
 
 with A0B.ATSAM3X8E.TC5_Timer.Internals;
 
@@ -16,14 +16,14 @@ package body Platform is
    ----------------------------
 
    procedure Enter_Critical_Section
-     renames A0B.ARMv7M.CMSIS.Disable_Interrupts;
+     renames A0B.ARMv7M.Instructions.Disable_Interrupts;
 
    ----------------------------
    -- Leave_Critical_Section --
    ----------------------------
 
    procedure Leave_Critical_Section
-     renames A0B.ARMv7M.CMSIS.Enable_Interrupts;
+     renames A0B.ARMv7M.Instructions.Enable_Interrupts;
 
    ------------------
    -- Request_Tick --
